@@ -7,7 +7,7 @@ function [p] = bisection(Func, a, b, abs_error, itermax)
   if a == b
     error('It must be given 2 different points');
   endif
-  if (Func(a) > 0 && Func(b) > 0) || (Func(a) < 0 && Func(b) < 0)
+  if Func(a) * Func(b) > 0
     error('Interval do not cross the x-axis');
   endif   
   if Func(a) > Func(b)
