@@ -1,8 +1,8 @@
-function [p] = bisection(Func, a, b, abs_error, itermax)
+function [p] = bisection(Func, a, b, tol, itermax)
   %BISECTION(Func, a, b, relative_error, itermax)
   %Func               non-linear function
   %a,b                interval with f(a) and f(b) with oposite sings
-  %abs_error          Precision which make the algorithm to stop
+  %tol                Error tolerance which make the algorithm to stop
   %itermax            Max number of iterations
   if a == b
     error('It must be given 2 different points');
@@ -20,7 +20,7 @@ function [p] = bisection(Func, a, b, abs_error, itermax)
     fb = Func(b);
     p = (a+b)/2;
     fp = Func(p);
-    if abs(fp) < abs_error
+    if abs(fp) < tol
       printf("Found solution with %d iterations.\n",k);
       return;
     endif
