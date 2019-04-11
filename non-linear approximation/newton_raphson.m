@@ -1,6 +1,6 @@
 function [x] = newton_raphson(Func, Dev, a, tol, itermax)
-  %NEWTON_RAPHSON(Func, a, b, relative_error, itermax)
-  %Func               non-linear function
+  %NEWTON_RAPHSON(Func, Dev, a, relative_error, itermax)
+  %Func               function to find the root
   %Dev                Derivative of the Func
   %a                  Guess point
   %tol                Error tolerance which make the algorithm to stop
@@ -16,5 +16,5 @@ function [x] = newton_raphson(Func, Dev, a, tol, itermax)
     endif
     a = x;
   endfor
-  error("Could not find solution within %d iterations\n");
+  error("Could not find solution within %d iterations\n",itermax);
 endfunction

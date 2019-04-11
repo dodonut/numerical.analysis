@@ -1,6 +1,6 @@
 function [x] = false_position(Func, a, b, tol, itermax)
   %FALSE_POSITION(Func, a, b, relative_error, itermax)
-  %Func               non-linear function
+  %Func               function to find the root
   %a,b                interval with f(a) and f(b) with oposite sings
   %tol                Error tolerance which make the algorithm to stop
   %itermax            Max number of iterations
