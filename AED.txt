@@ -1,0 +1,645 @@
+% Gauss-jacobi method
+
+% funcao para teste
+A = [10 2 1;
+     1 5 1;
+     2 3 10];
+b = [7; -8; 6];
+relative_error = 0.005;
+itermax = 50;
+
+function [x] = gauss_jacobi(A,b,relative_error, itermax)
+  %GAUSS_JACOBI(A,b,relative_error,itermax)
+  %A            Coeficients matrix
+  %b            Column vector of constants
+  %relative_error    Precision which make the algorithm to stop
+  %itermax      Max number of iterations
+  
+  x = zeros(size(b)); %instantiate the results and also make a guess
+  x0 = x;
+  n = size(A,1);      
+  for k = 1:itermax
+    for i = 1:n       % run throught each row
+      x(i) = (b(i) - A(i,[1:i-1,i+1:n])*x0([1:i-1,i+1:n]))/A(i,i); %isolate the x(i)
+    endfor
+    if norm(x-x0,'inf')<relative_error   %calculates the norm of the vector
+      printf("Results converge at %d iteration\n",k);
+      return
+    end
+    x0 = x;
+  end
+  error("Max iter number reached.");
+end
+
+%chamar funcao
+
+gauss_jacobi(A,b,relative_error, itermax)
+
+####################################################################
+
+% funcao para teste
+A = [10 2 1;
+     1 5 1;
+     2 3 10];
+b = [7; -8; 6];
+relative_error = 0.005;
+itermax = 50;
+
+function [x] = gauss_seidel(A,b,relative_error, itermax)
+  %GAUSS_SEIDEL (A,b,relative_error,itermax)
+  %A            Coeficients matrix
+  %b            Column vector of constants
+  %relative_error    Precision which make the algorithm to stop
+  %itermax      Max number of iterations
+  
+  x = zeros(size(b)); %instantiate the results and also make a guess
+  x0 = x;
+  n = size(A,1);      
+  for k = 1:itermax
+    for i = 1:n       % run throught each row
+      x(i) = (b(i) - A(i,[1:i-1,i+1:n])*x([1:i-1,i+1:n]))/A(i,i); %isolate the x(i)
+    endfor
+    if norm(x-x0,'inf')<relative_error   %calculates the norm of the vector
+      printf("Results converge at %d iteration\n",k);
+      return
+    end
+    x0 = x;
+  end
+  error("Max iter number reached.");
+end
+
+%chamar funcao
+
+gauss_seidel(A,b,relative_error, itermax)
+
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+tol = 0.005;
+itermax = 50;
+a = 0;
+b = 1;
+
+
+function [p] = bisection(Func, a, b, tol, itermax)
+  %BISECTION(Func, a, b, relative_error, itermax)
+  %Func               function to find the root
+  %a,b                interval with f(a) and f(b) with oposite sings
+  %tol                Error tolerance which make the algorithm to stop
+  %itermax            Max number of iterations
+  if a == b
+    error('It must be given 2 different points');
+  endif
+  if Func(a) * Func(b) > 0
+    error('Interval do not cross the x-axis');
+  endif   
+  if Func(a) > Func(b)
+    temp = a;
+    a = b;
+    b = temp;
+  endif
+  for k = 1:itermax
+    fa = Func(a);
+    fb = Func(b);
+    p = (a+b)/2;
+    fp = Func(p);
+    if abs(fp) < tol
+      printf("Found solution with %d iterations.\n",k);
+      return;
+    endif
+    if fp < 0
+      a = p;
+    else
+      b = p;
+    endif
+  endfor
+  error("Could not find solution within %d iterations\n");
+endfunction
+
+%chamar funcao
+
+bisection(@f,a,b,tol,itermax)
+
+#######################################################################################
+
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+tol = 0.005;
+itermax = 50;
+a = 0;
+b = 1;
+
+function [x] = false_position(Func, a, b, tol, itermax)
+  %FALSE_POSITION(Func, a, b, relative_error, itermax)
+  %Func               function to find the root
+  %a,b                interval with f(a) and f(b) with oposite sings
+  %tol                Error tolerance which make the algorithm to stop
+  %itermax            Max number of iterations
+  if a == b
+    error('It must be given 2 different points');
+  endif
+  if Func(a) * Func(b) > 0
+    error('Interval do not cross the x-axis');
+  endif   
+  if Func(a) > Func(b)
+    temp = a;
+    a = b;
+    b = temp;
+  endif
+  for k = 1:itermax
+    fa = Func(a);
+    fb = Func(b);
+    x = (a*fb-b*fa)/(fb-fa);
+    fx = Func(x);
+    if abs(fx) < tol
+      printf("Found solution with %d iterations.\n",k);
+      return;
+    endif
+    if fx < 0
+      a = x;
+    else 
+      b = x;
+    endif;
+  endfor
+  error("Could not find solution within %d iterations\n");
+endfunction
+
+%chamar funcao
+
+false_position(@f,a,b,tol,itermax)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+tol = 0.005;
+itermax = 50;
+a = 3;
+b = -2;
+c = 6;
+
+
+function [p] = muller(f,p0,p1,p2,tol,max_iter)
+  %MULLER(f, p0, p1,p2, tol, max_iter)
+  %f                  function to find the root
+  %p0,p1,p2           initial points 
+  %tol                Error tolerance which make the algorithm to stop
+  %max_iter            Max number of iterations
+  for i = 1:max_iter
+    h1 = p1-p0;
+    h2 = p2-p1;
+    c = f(p2);
+    s1 = (f(p1)-f(p0))/h1;
+    s2 = (c-f(p1))/h2;
+    a = (s2 - s1)/(h2+h1);
+    
+    
+    b = s2 + h2*a;
+    D = (b^2-4*a*c)^.5;
+    %get the largest value for E so that p is the closest possible to 0
+    %since they are inversely proportional
+    if abs(b-D) < abs(b+D)  
+      E = b+D;
+    else 
+      E = b-D;
+    end
+    
+    h = -2*c/E;
+    p = p2 + h;
+    
+    if abs(h) < tol
+      printf("Found solution with %d iterations.\n",i);
+      return
+    end
+    
+    p0 = p1;
+    p1 = p2;
+    p2 = p;
+  end
+  error("Could not find solution within %d iterations\n", max_iter);
+endfunction
+
+%chamar funcao
+
+muller(@f,a,b,c,tol,itermax)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+tol = 0.005;
+itermax = 50;
+a = 0;
+
+function [x] = newton_raphson(Func, a, tol, itermax)
+  %NEWTON_RAPHSON(Func, Dev, a, relative_error, itermax)
+  %Func               function to find the root
+  %Dev                Derivative of the Func
+  %a                  Guess point
+  %tol                Error tolerance which make the algorithm to stop
+  %itermax            Max number of iterations
+  dx = .0001;
+  Der = (Func(a + dx)-Func(a))/dx;      %derivative
+  if Der == 0
+    a = a + 1;        %avoid a nasty division
+  endif
+  for k = 1:itermax
+    x = a - Func(a)/Der;
+    if abs(Func(x)) < tol
+      printf("Found solution with %d iterations.\n",k);
+      return;
+    endif
+    a = x;
+    Der = (Func(a + dx)-Func(a))/dx;
+  endfor
+  error("Could not find solution within %d iterations\n",itermax);
+endfunction
+
+%chamar funcao
+
+newton_raphson(@f,a,tol,itermax)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+tol = 0.005;
+itermax = 50;
+a = 0;
+b = 1;
+
+
+function [x,y] = secant(Func, a,b, tol, itermax)
+  %SECANT(Func, a, b, relative_error, itermax)
+  %Func               function to find the root
+  %a,b                interval with f(a) and f(b) with oposite sings
+  %tol                Error tolerance which make the algorithm to stop
+  %itermax            Max number of iterations
+  for k = 1:itermax
+    fa = Func(a);
+    fb = Func(b);
+    x = (b*fa - a*fb)/(fa-fb);
+    if abs(Func(x)) < tol
+      printf("Found solution with %d iterations.\n",k);
+      return;
+    endif
+    b = a;
+    a = x;
+  endfor
+  error("Could not find solution within %d iterations\n");
+endfunction
+
+%chamar funcao
+
+secant(@f,a,b,tol,itermax)
+
+#######################################################################################
+
+%teste
+x = [0 1 2 3 4];
+y = e.^x;
+
+function [P,val] = newton_interpolation(to_find,x,y)
+  %NEWTON_INTERPOLATION(x,y)
+  %to_find           the point which you want to interpolate
+  %x,y               are row matrices of same length which represent the 
+  %                  datapoints to interpolate
+  
+  if length(x) != length(y) 
+    error("vectors must have same dimentions");
+  endif
+  n = length(x);
+  F = zeros(n,n); 
+  for i = 1:n
+    F(i, 1) = y(i);
+  end
+  for i = 2:n
+    for j = 2:i
+      F(i,j) = (F(i,j-1)-F(i-1,j-1))/(x(i)-x(i-j+1));
+    end
+  end
+  P = diag(F)';
+  val = P(1);
+  for i = 2:n
+    a = P(i);
+    for j = 2:i
+      a *= (to_find - x(j-1));
+    end
+    val += a;
+  end
+  printf("\n\nValue interpolated: %.6f\n",val); 
+endfunction
+
+%chamar funcao
+
+newton_interpolation(2.5,x,y)
+
+#######################################################################################
+
+%teste
+x = [0 1 2 3 4];
+y = e.^x;
+
+function y = lagrange_interpolation(x,px,py)
+  %LAGRANGE_INTERPOLATION(x,px,py)
+  %x                 the point which you want to interpolate
+  %px,py             are row matrices of same length which represent the 
+  %                  datapoints to interpolate
+  if length(px) != length(py) 
+    error("vectors must have same dimentions");
+  endif
+  n = length(px);
+  L = ones(n);
+  for i = 1:n
+    for j = 1:n
+      if i != j
+        L(i) *= (x - px(j))/(px(i) - px(j));
+      endif
+    endfor
+  endfor
+  y = 0;
+  for i = 1:n
+    y += py(i)*L(i);
+  endfor
+endfunction
+
+%chamar funcao
+
+lagrange_interpolation(2.5,x,y)
+
+#######################################################################################
+
+%teste
+x = [0 1 2 3 4];
+y = e.^x;
+
+function cubic_splines(x,y)
+  %INTERPOLATION(x,y)
+  %x,y               are row matrices of same length which represent the 
+  %                  datapoints to interpolate
+  n = length(x);
+  delta = h = zeros(n-1, 1)';
+  for i = 1:n-1
+    h(i) = x(i+1) - x(i);
+    delta(i) = (y(i+1)-y(i))/h(i);
+  end
+  M = zeros(n-2,n); %just ignore the first and last column
+  b = zeros(n-2,1);
+  c = 1;
+  for i = 1:n-2
+    M(i,c) = h(c);
+    M(i,c+1) = 2*(h(c) + h(c+1));
+    M(i,c+2) = h(c+1);
+    c += 1;
+    b(i) = 6*(delta(i+1)-delta(i));
+  end
+  MM = zeros(n-2,n-2);
+  for i = 1:n-2
+    MM(i,:) = MM(i,:) .+ [M(i,2:n-1)]; % ignoring the first row and column so to calculate the inverse
+  end
+  sds = inv(MM) * b;
+  sds = [0 sds(:)' 0];                 % natural cubic spline has the first and last second derivative equal to 0;
+  cs = zeros(n-1, 4);
+  a = b = c = d = zeros(n-2, 1)';
+  for i=1:n-1
+    a(i) = (sds(i+1) - sds(i))/(6*h(i));
+    b(i) = sds(i)/2;
+    c(i) = delta(i) - h(i) * (sds(i+1) + 2*sds(i))/6;
+    %printf("%d => delta=%d, h=%d, sds %d %d\n",i,delta(i),h(i), sds(i+1), 2*sds(i));
+    d(i) = y(i);
+  end
+  breaks = x(1:n)
+  for i=1:n-1
+    cs(i,:) = cs(i,:) .+ [a(i) b(i) c(i) d(i)];
+  end
+  coefficients = cs
+end
+
+%chamar funcao
+
+cubic_splines(x,y)
+
+#######################################################################################
+
+%teste
+x = [2 3 5 7 9];
+y = [4 5 7 10 15];
+
+function min_squares(x,y)
+  %MIN_SQUARES(a, b, func, n)
+  %x,y               points
+  n = length(x);
+  xs = xy = u = d = ys = zeros(n,1)';
+  for i = 1:n
+    xs(i) = x(i)^2;
+    xy(i) = x(i)*y(i);
+    ys(i) = y(i)^2;
+  endfor
+  A = [ n sum(x);
+        sum(x) sum(xs);];
+  b = [ sum(y); 
+        sum(xy);];
+  X = flip(inv(A) * b)
+  mean_y = mean(y);
+  for i=1:n
+    u(i) = X(1)*x(i) + X(2);
+    d(i) = (y(i) - u(i))^2;
+  endfor
+  D = sum(d)
+  R_sqr = 1 - D/(sum(ys) - sum(y)^2/n)
+  var_res = D / (n-2)
+end
+
+%chamar funcao
+
+min_squares(x,y)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+delta = 0.0001;
+x = 2.5;
+
+function y = derivation(x, f, delta)
+  %derivation(a, b, func, n)
+  %x                 point to derivate
+  %f                 the original function
+  %delta             precision of derivation
+  y = (f(x+delta)-f(x))/delta;
+end
+
+%chamar funcao
+
+derivation(x,@f,delta)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+
+function y = trapezes(a, b, func, n)
+  %trapezes(a, b, func, n)
+  %a,b               the interval to integrate
+  %func              the original function
+  %n                 number of trapezes
+  h = (b - a)/n;
+  y = 0;
+  for i = 1:n-1
+    y += func(i*h + a);
+  end
+  y = (func(a) + y*2 + func(b)) * h/2;
+end
+
+%chamar funcao
+
+trapezes(0,1,@f,10)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+
+function y = simpson_first_rule(a,b,func,n)
+  %simpson_first_rule(a, b, func, n)
+  %a,b               the interval to integrate
+  %func              the original function
+  %n                 number of intervals
+  h = (b-a)/(2*n);
+  x = [4 2];
+  y = 0;
+  for i = 1:(2*n)-1
+    y += x(mod(i+1,2)+1)*func(i*h + a);
+  end
+  y = (y + func(a) + func(b)) * h/3;
+end
+
+
+%chamar funcao
+
+simpson_first_rule(0,1,@f,10)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    y = 3*x^2 - 8*x + 3;
+end
+
+function y = simpson_sec_rule(a,b,func,n)
+  %simpson_first_rule(a, b, func, n)
+  %a,b               the interval to integrate
+  %func              the original function
+  %n                 number of intervals
+  k = [3 3 2];
+  h = (b-a)/(3*n);
+  y = 0;
+  for i = 1:(3*n)-1
+    y += k(mod(i+2, 3)+1) * func(i*h + a);
+  end
+  
+  y = (y + func(a) + func(b)) *3*h/8;
+end
+
+%chamar funcao
+
+simpson_sec_rule(0,1,@f,10)
+
+#######################################################################################
+
+% funcao para teste
+function y = f(x)
+    x1 = x(1);
+    x2 = x(2);
+    y = x1^2 + x2^2 + 8*x1 - 3*x2 + 9;
+end
+function y = gr(x)
+    x1 = x(1);
+    x2 = x(2);
+    y = [2*x1 + 8, 2*x2 - 3];
+end
+
+function y = optimization(x,f,gr,tol,iter)
+
+  n = length(x);
+  k = 1;
+  z0 = 0;
+  while k <= iter
+  
+    g1 = f(x);                 % value of f on points of x0
+    z = gr(x);                 % gradient
+    z0 = norm(z);              % norm
+    if z0 == 0
+      printf("Gradiente zero.\n");
+      x
+      g1
+      return;
+    endif
+    z = z./z0;      % z unit vector
+    a1 = 0;
+    a3 = 1;
+    g3 = f(x - a3*z);
+    while g3 >= g1
+        a3 = a3/2;
+        g3 = f(x-a3*z);
+        
+        if a3 < tol/2
+            printf("Sem grandes mudanças\n");
+            x 
+            g1
+            return;
+        endif
+    endwhile
+    
+    a2 = a3 / 2;
+    g2 = f(x - a2 * z);
+    h1 = (g2 - g1) / a2;
+    h2 = (g3 - g2) / (a3 - a2);
+    h3 = (h2 - h1) / a3;
+    
+    a0 = 0.5 * (a2 - h1/h3);
+    g0 = f(x - a0*z);
+  
+    if g0 <= g3
+      a = a3;
+    else 
+      a = a3;
+    end
+    g = f(x - a * z);
+    x = x - a * z;
+    if abs(g - g1) <= tol
+      printf("Sucesso! Completo em %d iterações\n",k);
+      x
+      g
+      return;
+    endif
+    k = k + 1;
+  endwhile
+  error("Não foi possível encontrar o valor otímo.");
+
+endfunction
+
+%chamar funcao
+
+optimization([1,2],@f,@gr,0.001,50)
+
+#######################################################################################
